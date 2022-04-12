@@ -4,6 +4,7 @@ module GenCache
             @config = config
             @mode = Mode.new(config: config)
             @storage = Storage.new(config: config)
+            GenCache.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}"
         end
 
         def get item_id
@@ -12,13 +13,16 @@ module GenCache
             wrapped_item = @storage.get(item_id)
             item = wrapped_item.unwrap
             metadata = wrapped_item.metadata
+            GenCache.log :debug, "cache_get", "item_id: #{item_id}, item: #{item}, metadata: #{metadata}"
 
             stale = @config.control_class.stale?(item, metadata)
             stale_allowed = @config.control_class.stale_allowed?(item, metadata)
+            GenCache.log :debug, "cache_get", "stale: #{stale}, stale_allowed: #{stale_allowed}"
 
             # If we don't have the item in our cache, then try and do a direct fetch
             # Or, if the item is stale and we don't allow stale then direct fetch
             if !wrapped_item || (stale && !stale_allowed)
+                GenCache.log :debug, "cache_get", "no item, or stale and stale is not allowed"
                 raise GenCache::Error::CacheIsOffline unless @mode.can_fetch_inline?
                 return direct_fetch(item_id)
             end
@@ -26,33 +30,40 @@ module GenCache
             # If we have a stale item, and we allow stale, trigger a background refresh
             # Or, if we hit a smart refresh, trigger a background refresh
             if @config.control_class.smart_refresh?(item, metadata) || (stale && stale_allowed)
+                GenCache.log :debug, "cache_get", "smart refresh, or stale and stale allowed, trigger background refresh"
                 background_refresh(item_id)
             end
 
+            GenCache.log :debug, "cache_get", "returning unwrapped item"
             wrapped_item.unwrap
         end
 
         def set item
+            GenCache.log :debug, "cache_set", "item: #{item} item_class: #{item.class} config_item_class: #{@config.item_class}"
             raise GenCache::Error::ItemClassIncorrect unless item.class == @config.item_class
             @storage.set(item)
         end
 
         def delete item_id
+            GenCache.log :debug, "cache_delete", "item_id: #{item_id}"
             @storage.delete(item_id)
         end
 
         # This is only used by the background refresher job.
         def background_fetch item_id
+            GenCache.log :debug, "cache_background_fetch", "triggering background fetch for #{item_id}"
             raise GenCache::Error::CacheIsOffline unless @mode.can_fetch_background?
             direct_fetch(item_id)
         end
 
         private
         def background_refresh(item_id)
-            BackgroundFetcher.perform_async(item_id)
+            GenCache.log :debug, "cache_background_fetch", "triggering background fetch to sidekiq"
+            #BackgroundFetcher.perform_async(item_id)
         end
 
         def direct_fetch(item_id)
+            GenCache.log :debug, "cache_direct_fetch", "fetching #{item_id} from control class #{@config.control_class}"
             item = @config.control_class.fetch(item_id)
             set(item)
             item

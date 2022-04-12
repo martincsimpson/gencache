@@ -7,6 +7,7 @@ module GenCache
 
             # Inline fetches are allowed unless we are in state offline
             def can_fetch_inline?
+                GenCache.log :debug, "mode_can_fetch_inline", "cache_mode: #{@config.control_class.cache_mode}"
                 return false if @config.control_class.cache_mode == :offline
                 true
             end
@@ -14,6 +15,7 @@ module GenCache
             # Background fetches are only allowed in the case that we are in
             # normal cache mode
             def can_fetch_background?
+                GenCache.log :debug, "mode_can_fetch_background", "cache_mode: #{@config.control_class.cache_mode}"
                 return true if @config.control_class.cache_mode == :normal
                 false
             end

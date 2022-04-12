@@ -11,7 +11,8 @@ Done:
     ---
     - packaging as a gem
     - In-memory storage driver
-    - Working cache fetch/set using local_test.rb
+    - Working cache fetch/set using local_test.rb.
+    - Add logging
 
 Questions for team:
     - Are we implementing cache mode now? - better to be internal or exposed as a block?
@@ -19,7 +20,6 @@ Questions for team:
     - Connections to databases and perisstence 
 
 Next Implementation Steps:
-    - Add logging
     - bucket_key: "merchant" (dynamic)
     - Testing of background fetcher
     - Cassandra backing store with migrations

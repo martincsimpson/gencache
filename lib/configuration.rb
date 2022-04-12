@@ -3,7 +3,8 @@ module GenCache
         attr_accessor :cache_configs
         attr_accessor :debug_mode
         attr_accessor :storage_driver
-
+        attr_accessor :logger
+        
         def initialize
             @cache_configs = []
             @storage_driver = GenCache::Storage::Drivers::Memory

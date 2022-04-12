@@ -56,6 +56,7 @@ end
 GenCache.configure do |config|
     config.debug_mode = true
     config.storage_driver = GenCache::Storage::Drivers::Memory
+    config.logger = Logger.new(STDOUT)
     config.cache_configs << GenCache::Cache::Configuration.new(
         name: "product_cache",
         bucket_key: "merchant",
