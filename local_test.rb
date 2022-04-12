@@ -22,14 +22,17 @@ end
 
 # Highstreet interface to the cache
 class ProductCacheControl
-    
+    # TODO: This cache mode should probably be internalised
+    # via an api so we can call GenCache.with_cache("cache").cache_mode.offline!
+    # instead of doing it via the control class
+    def self.cache_mode
+        :online
+    end
+
     # Fetches item from an external source
     def self.fetch item_id
         # This is sample code
-        item = Product.new
-        item.id = item_id
-        item.name = "Product Name - #{item_id}"
-
+        item = Product.new(id: item_id, name: "Product Name - #{item_id}")
         raise GenCache::Error::ItemNotFound unless item
 
         return item
@@ -45,11 +48,11 @@ class ProductCacheControl
 
     # TODO: Dependent on metadata
     def self.stale? item, metadata
-        return false
+        return true
     end
 
     def self.stale_allowed? item, metadata
-        return true
+        return false
     end
 end
 
