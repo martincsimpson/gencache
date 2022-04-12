@@ -8,30 +8,25 @@ Done:
     - Cache Insert
     - Cache retrieval
     - Background refresh job
+    ---
+    - packaging as a gem
+    - In-memory storage driver
+    - Working cache fetch/set using local_test.rb
 
 Questions for team:
-    - Can we expose the blocks using procs, or is it better to use a class?
-        Both: Lets use Class
     - Are we implementing cache mode now? - better to be internal or exposed as a block?
         Vincent: Agreed to not do it now
-    - Do we use the wrapper, or do we set the generation and other IDs onto the object directly? 
-        Both: Agreed to use metadata class
-
     - Connections to databases and perisstence 
 
 Next Implementation Steps:
-    - Package as a gem
-    - In-memory storage driver
-    - bucket_key: "merchant" (dynamic)
-    - Working cache fetch/set using local_test.rb
-    - Testing of background fetcher
     - Add logging
+    - bucket_key: "merchant" (dynamic)
+    - Testing of background fetcher
     - Cassandra backing store with migrations
     - Tests
 
 
 Feedback from team:
     - end of this week local_test.rb working
-    - packaging as a gem
     - in memory storage driver
     - bucket_key: "merchant",

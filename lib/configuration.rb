@@ -10,7 +10,11 @@ module GenCache
             @debug_mode = false
         end
     end
-
+    
+    def self.configuration
+        @@configuration
+    end
+    
     def self.configure
         @@configuration ||= Configuration.new
         yield @@configuration

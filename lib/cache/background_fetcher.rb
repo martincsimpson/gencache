@@ -1,3 +1,5 @@
+require 'sidekiq'
+
 module GenCache
     class Cache
         class BackgroundFetcher

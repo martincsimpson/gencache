@@ -16,4 +16,5 @@ Gem::Specification.new do |spec|
   
   spec.require_paths = ["lib"]
   spec.add_dependency "json", ">= 1"
+  spec.add_dependency "sidekiq"
 end

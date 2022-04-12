@@ -9,7 +9,11 @@ module GenCache
         def get item_id
             # Fetch from the cache storage, with the stale flag set
             # Also determine if stale is allowed or not
-            wrapped_item = GenCache::Storage.get(item_id)
+            wrapped_item = @storage.get(item_id)
+            item = wrapped_item.unwrap
+            metadata = wrapped_item.metadata
+
+            stale = @config.control_class.stale?(item, metadata)
             stale_allowed = @config.control_class.stale_allowed?(item, metadata)
 
             # If we don't have the item in our cache, then try and do a direct fetch
@@ -29,12 +33,12 @@ module GenCache
         end
 
         def set item
-            raise GenCache::Error::ItemClassIncorrect unless item == @config.item_class
-            GenCache::Cache::Storage.set(item)
+            raise GenCache::Error::ItemClassIncorrect unless item.class == @config.item_class
+            @storage.set(item)
         end
 
         def delete item_id
-            GenCache::Cache::Storage.delete(item_id)
+            @storage.delete(item_id)
         end
 
         # This is only used by the background refresher job.
