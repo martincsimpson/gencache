@@ -26,7 +26,7 @@ class ProductCacheControl
     # via an api so we can call GenCache.with_cache("cache").cache_mode.offline!
     # instead of doing it via the control class
     def self.cache_mode
-        :online
+        :offline
     end
 
     # Fetches item from an external source
@@ -48,7 +48,7 @@ class ProductCacheControl
 
     # TODO: Dependent on metadata
     def self.stale? item, metadata
-        return true
+        return false
     end
 
     def self.stale_allowed? item, metadata
@@ -62,10 +62,10 @@ GenCache.configure do |config|
     config.logger = Logger.new(STDOUT)
     config.cache_configs << GenCache::Cache::Configuration.new(
         name: "product_cache",
-        bucket_key: "merchant",
         item_class: Product,
         control_class: ProductCacheControl,
     )
 end
-GenCache.with_cache("product_cache").set(Product.new(id: "test", name: "test product"))
-GenCache.with_cache("product_cache").get("test")
+
+GenCache.with_cache("product_cache", namespace: "gstar-enUS").set("test111", Product.new(id: "test", name: "test product"))
+GenCache.with_cache("product_cache", namespace: "gstar-enUS").get("test111")

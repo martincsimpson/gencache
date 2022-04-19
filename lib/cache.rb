@@ -1,10 +1,10 @@
 module GenCache
     class Cache
-        def initialize(config:)
+        def initialize(config:, namespace:)
             @config = config
             @mode = Mode.new(config: config)
-            @storage = Storage.new(config: config)
-            GenCache.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}"
+            @storage = Storage.new(config: config, namespace: namespace)
+            GenCache.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
         end
 
         def get item_id
@@ -38,10 +38,10 @@ module GenCache
             wrapped_item.unwrap
         end
 
-        def set item
-            GenCache.log :debug, "cache_set", "item: #{item} item_class: #{item.class} config_item_class: #{@config.item_class}"
+        def set id, item
+            GenCache.log :debug, "cache_set", "id: #{id}, item: #{item} item_class: #{item.class} config_item_class: #{@config.item_class}"
             raise GenCache::Error::ItemClassIncorrect unless item.class == @config.item_class
-            @storage.set(item)
+            @storage.set(id, item)
         end
 
         def delete item_id

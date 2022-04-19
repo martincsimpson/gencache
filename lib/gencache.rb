@@ -2,12 +2,12 @@ module GenCache
 
     # Find a cache that has been specified
     # This is then used to operate specific queries
-    def self.with_cache(cache_name)
-        GenCache.log :debug, "with_cache", "using #{cache_name}"
+    def self.with_cache(cache_name, namespace: )
+        GenCache.log :debug, "with_cache", "using #{cache_name} with namespace #{namespace}"
         config = GenCache.configuration.cache_configs.find { |c| c.name == cache_name }
         raise GenCache::Error::CacheConfigNotFound unless config
         
-        Cache.new(config: config)
+        Cache.new(config: config, namespace: namespace)
     end
 
     def self.log level, context, message

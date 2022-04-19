@@ -11,22 +11,21 @@ Done:
     ---
     - packaging as a gem
     - In-memory storage driver
+    - Implement Singletons (not thread safe) for Storage Drivers
     - Working cache fetch/set using local_test.rb.
     - Add logging
-
-Questions for team:
-    - Are we implementing cache mode now? - better to be internal or exposed as a block?
-        Vincent: Agreed to not do it now
-    - Connections to databases and perisstence 
+    - Testing of background fetcher
 
 Next Implementation Steps:
-    - bucket_key: "merchant" (dynamic)
-    - Testing of background fetcher
+    - namespace: "merchant" (dynamic)
     - Cassandra backing store with migrations
     - Tests
 
-
-Feedback from team:
-    - end of this week local_test.rb working
-    - in memory storage driver
-    - bucket_key: "merchant",
+Discussion items:
+    - to support different imeplementations per merchant, I think we should setup multiple cache's (reading all merchants from ctx)
+      this method has some advantages:
+        - Less complicated primary keys
+        - Flushing the cache is a simple `truncate <product_cache_gstar>`
+        - Better partitioning of data and durability
+      it also comes with some disadvantages
+        - Creating the cassandra tables on the fly and triggering the replication of this table will be a bit more difficult

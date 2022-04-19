@@ -18,10 +18,10 @@ module GenCache
             attr_accessor :last_updated
             attr_accessor :payload
         
-            def self.wrap(item)
+            def self.wrap(id, item)
                 GenCache.log :debug, "wrapper", "wrapping item #{item} #{item.id}"
                 wrapped_item = Wrapper.new
-                wrapped_item.id = item.id
+                wrapped_item.id = id
                 wrapped_item.generation = Time.now.to_i
                 wrapped_item.payload = Oj.dump(item)
                 wrapped_item
