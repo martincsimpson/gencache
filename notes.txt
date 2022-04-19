@@ -15,9 +15,10 @@ Done:
     - Working cache fetch/set using local_test.rb.
     - Add logging
     - Testing of background fetcher
+    ---
+    - namespace: "merchant" (dynamic)
 
 Next Implementation Steps:
-    - namespace: "merchant" (dynamic)
     - Cassandra backing store with migrations
     - Tests
 

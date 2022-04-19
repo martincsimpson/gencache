@@ -1,4 +1,5 @@
 require 'singleton'
+require 'cassandra'
 
 module GenCache
     class Storage
