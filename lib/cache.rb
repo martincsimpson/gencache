@@ -1,9 +1,10 @@
 module GenCache
     class Cache
         def initialize(config:, namespace:)
+            @namespace = namespace
             @config = config
             @mode = Mode.new(config: config)
-            @storage = Storage.new(config: config, namespace: namespace)
+            @storage = Storage.new(config: config, namespace: @namespace)
             GenCache.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
         end
 
