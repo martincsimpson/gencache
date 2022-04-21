@@ -9,14 +9,18 @@ module GenCache
                     @cache = {}
                 end
 
+                def set_config(config:)
+                    # NOOP
+                end
+
                 def get item_id, namespace:
                     # Return a wrapper instance
                     @cache[item_id]
                 end
         
-                def set item, namespace:
+                def set id, item, namespace:
                     # Take a wrapper instance
-                    @cache[item.id] = item
+                    @cache[id] = item
                 end
         
                 def delete item_id, namespace:
