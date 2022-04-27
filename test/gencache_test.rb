@@ -120,5 +120,27 @@ describe GenCache::Cache do
             cache.set cache_item_id, cache_item
         end
     end
+    describe ".delete" do
+        let(:cache) { GenCache::Cache.new(config: config, namespace: namespace, mode: mode, storage: storage, logger: logger) }
+        let(:cache_item_id) { "id" }
+
+        it "should call storage delete" do
+            logger.expect :log, true, [Object, Object, Object]
+            logger.expect :log, true, [Object, Object, Object]
+
+            mode.expect :new, mode do |config:|
+                true
+            end
+            storage.expect :new, storage do |config:, namespace:|
+                true
+            end
+
+            config.expect :item_class, nil
+            config.expect :item_class, nil
+
+            storage.expect :delete, nil, [String]
+            cache.delete cache_item_id
+        end
+    end
 
 end
