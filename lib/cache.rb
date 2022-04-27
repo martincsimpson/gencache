@@ -3,9 +3,10 @@ module GenCache
         def initialize(config:, namespace:, mode: Mode, storage: Storage, logger: GenCache)
             @namespace = namespace
             @config = config
+            @logger = logger
             @mode = mode.new(config: config)
             @storage = storage.new(config: config, namespace: @namespace)
-            logger.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
+            @logger.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
         end
 
         def get item_id
@@ -14,16 +15,16 @@ module GenCache
             wrapped_item = @storage.get(item_id)
             item = wrapped_item.unwrap
             metadata = wrapped_item.metadata
-            GenCache.log :debug, "cache_get", "item_id: #{item_id}, item: #{item}, metadata: #{metadata}"
+            @logger.log :debug, "cache_get", "item_id: #{item_id}, item: #{item}, metadata: #{metadata}"
 
             stale = @config.control_class.stale?(item, metadata)
             stale_allowed = @config.control_class.stale_allowed?(item, metadata)
-            GenCache.log :debug, "cache_get", "stale: #{stale}, stale_allowed: #{stale_allowed}"
+            @logger.log :debug, "cache_get", "stale: #{stale}, stale_allowed: #{stale_allowed}"
 
             # If we don't have the item in our cache, then try and do a direct fetch
             # Or, if the item is stale and we don't allow stale then direct fetch
             if !wrapped_item || (stale && !stale_allowed)
-                GenCache.log :debug, "cache_get", "no item, or stale and stale is not allowed"
+                @logger.log :debug, "cache_get", "no item, or stale and stale is not allowed"
                 raise GenCache::Error::CacheIsOffline unless @mode.can_fetch_inline?
                 return direct_fetch(item_id)
             end
@@ -31,22 +32,22 @@ module GenCache
             # If we have a stale item, and we allow stale, trigger a background refresh
             # Or, if we hit a smart refresh, trigger a background refresh
             if @config.control_class.smart_refresh?(item, metadata) || (stale && stale_allowed)
-                GenCache.log :debug, "cache_get", "smart refresh, or stale and stale allowed, trigger background refresh"
+                @logger.log :debug, "cache_get", "smart refresh, or stale and stale allowed, trigger background refresh"
                 background_refresh(item_id)
             end
 
-            GenCache.log :debug, "cache_get", "returning unwrapped item"
+            @logger.log :debug, "cache_get", "returning unwrapped item"
             wrapped_item.unwrap
         end
 
         def set id, item
-            GenCache.log :debug, "cache_set", "id: #{id}, item: #{item} item_class: #{item.class} config_item_class: #{@config.item_class}"
-            raise GenCache::Error::ItemClassIncorrect unless item.class == @config.item_class
+            @logger.log :debug, "cache_set", "id: #{id}, item: #{item} item_class: #{item.class} config_item_class: #{@config.item_class}"
+            raise GenCache::Error::ItemClassIncorrect unless item.is_a?(@config.item_class)
             @storage.set(id, item)
         end
 
         def delete item_id
-            GenCache.log :debug, "cache_delete", "item_id: #{item_id}"
+            @logger.log :debug, "cache_delete", "item_id: #{item_id}"
             @storage.delete(item_id)
         end
 
