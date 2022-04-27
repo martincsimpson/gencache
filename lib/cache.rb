@@ -1,11 +1,11 @@
 module GenCache
     class Cache
-        def initialize(config:, namespace:)
+        def initialize(config:, namespace:, mode: Mode, storage: Storage, logger: GenCache)
             @namespace = namespace
             @config = config
-            @mode = Mode.new(config: config)
-            @storage = Storage.new(config: config, namespace: @namespace)
-            GenCache.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
+            @mode = mode.new(config: config)
+            @storage = storage.new(config: config, namespace: @namespace)
+            logger.log :debug, "cache_initialize", "config: #{@config}, mode: #{@mode}, storage: #{@storage}, namespace: #{@namespace}"
         end
 
         def get item_id
