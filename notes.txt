@@ -17,16 +17,9 @@ Done:
     - Testing of background fetcher
     ---
     - namespace: "merchant" (dynamic)
+    - Cassandra backing store with migrations
 
 Next Implementation Steps:
-    - Cassandra backing store with migrations
     - Tests
-
-Discussion items:
-    - to support different imeplementations per merchant, I think we should setup multiple cache's (reading all merchants from ctx)
-      this method has some advantages:
-        - Less complicated primary keys
-        - Flushing the cache is a simple `truncate <product_cache_gstar>`
-        - Better partitioning of data and durability
-      it also comes with some disadvantages
-        - Creating the cassandra tables on the fly and triggering the replication of this table will be a bit more difficult
+    - Write Readme (no migrations included, reason why, how you would adjust the table / recommend how we would do migrations)
+    - Refinement/Investigation into middleware integration

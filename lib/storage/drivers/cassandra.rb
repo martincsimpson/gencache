@@ -44,7 +44,7 @@ module GenCache
                     generation bigint,
                     data text,
                     PRIMARY KEY ((cache_id, namespace, id))
-                )                
+                )
                 """
 
                 def initialize

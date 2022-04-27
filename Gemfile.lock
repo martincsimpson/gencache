@@ -7,6 +7,7 @@ GEM
     connection_pool (2.2.5)
     ione (1.2.4)
     method_source (1.0.0)
+    minitest (5.15.0)
     oj (3.13.11)
     pry (0.14.1)
       coderay (~> 1.1)
@@ -25,6 +26,7 @@ PLATFORMS
 
 DEPENDENCIES
   cassandra-driver
+  minitest
   oj
   pry
   require_all

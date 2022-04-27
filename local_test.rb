@@ -58,11 +58,11 @@ end
 
 GenCache.configure do |config|
     config.debug_mode = true
-    config.storage_driver = GenCache::Storage::Drivers::Memory
-    # config.storage_driver = GenCache::Storage::Drivers::Cassandra
-    # config.storage_opts = {
-    #     host: "192.168.195.128"
-    # }
+    # config.storage_driver = GenCache::Storage::Drivers::Memory
+    config.storage_driver = GenCache::Storage::Drivers::Cassandra
+    config.storage_opts = {
+        host: "192.168.195.128"
+    }
     config.logger = Logger.new(STDOUT)
     config.cache_configs << GenCache::Cache::Configuration.new(
         name: "product_cache",
