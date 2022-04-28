@@ -1,3 +1,4 @@
+require "test/helper"
 
 describe GenCache::Storage::Wrapper do
     describe GenCache::Storage::Wrapper::Metadata do

@@ -1,3 +1,4 @@
+require "test/helper"
 
 describe GenCache::Configuration do
     describe ".initialize" do

@@ -1,3 +1,5 @@
+require "test/helper"
+
 describe GenCache::Cache do
     let(:mode) { Minitest::Mock.new }
     let(:storage) { Minitest::Mock.new }
@@ -229,6 +231,8 @@ describe GenCache::Cache do
             logger.expect :log, nil, [:debug, String, String]
             mode.expect :can_fetch_background?, true
 
+            logger.expect :log, nil, [:debug, String, String]
+
             cache.stub :direct_fetch, nil do
                 cache.background_fetch item_id
             end
@@ -246,6 +250,8 @@ describe GenCache::Cache do
             
             cache.stub :direct_fetch, nil do
                 assert_raises GenCache::Error::CacheIsOffline do
+                    logger.expect :log, nil, [:debug, String, String]
+
                     cache.background_fetch item_id
                 end
             end

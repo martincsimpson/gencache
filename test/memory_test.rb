@@ -1,3 +1,4 @@
+require "test/helper"
 
 describe GenCache::Storage::Drivers::Memory do
     describe ".set" do

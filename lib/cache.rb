@@ -53,7 +53,7 @@ module GenCache
 
         # This is only used by the background refresher job.
         def background_fetch item_id
-            GenCache.log :debug, "cache_background_fetch", "triggering background fetch for #{item_id}"
+            @logger.log :debug, "cache_background_fetch", "triggering background fetch for #{item_id}"
             raise GenCache::Error::CacheIsOffline unless @mode.can_fetch_background?
             direct_fetch(item_id)
         end

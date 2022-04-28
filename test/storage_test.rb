@@ -1,3 +1,4 @@
+require "test/helper"
 
 describe GenCache::Storage do
     let(:config) { {} }

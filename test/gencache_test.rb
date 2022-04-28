@@ -1,3 +1,5 @@
+require "test/helper"
+
 describe GenCache do
     describe ".with_cache" do
         let(:cache_name) { "test_cache" }

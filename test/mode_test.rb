@@ -1,3 +1,5 @@
+require "test/helper"
+
 describe GenCache::Cache::Mode do
     describe ".initialize" do
         it "sets the config" do

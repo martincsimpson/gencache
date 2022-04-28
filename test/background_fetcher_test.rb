@@ -1,3 +1,4 @@
+require "test/helper"
 
 describe GenCache::Cache::BackgroundFetcher do
     describe ".perform" do
