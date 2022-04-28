@@ -18,8 +18,8 @@ module GenCache
             attr_accessor :last_updated
             attr_accessor :payload
         
-            def self.wrap(id, item)
-                GenCache.log :debug, "wrapper", "wrapping item #{item} #{item.id}"
+            def self.wrap(id, item, logger: GenCache)
+                logger.log :debug, "wrapper", "wrapping item #{item} #{item.id}"
                 wrapped_item = Wrapper.new
                 wrapped_item.id = id
                 wrapped_item.generation = Time.now.to_i
@@ -27,13 +27,13 @@ module GenCache
                 wrapped_item
             end
 
-            def unwrap
-                GenCache.log :debug, "wrapper", "unwrapping #{@payload}"
+            def unwrap(logger: GenCache)
+                logger.log :debug, "wrapper", "unwrapping #{@payload}"
                 Oj.load(@payload)
             end
 
-            def metadata
-                GenCache.log :debug, "wrapper", "creating metadata last_updated: #{@last_updated} generation: #{@generation}"
+            def metadata(logger: GenCache)
+                logger.log :debug, "wrapper", "creating metadata last_updated: #{@last_updated} generation: #{@generation}"
                 Metadata.new(last_updated: @last_updated, generation: @generation)
             end
 
