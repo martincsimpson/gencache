@@ -37,7 +37,7 @@ module GenCache
             end
 
             @logger.log :debug, "cache_get", "returning unwrapped item"
-            wrapped_item.unwrap
+            item
         end
 
         def set id, item
@@ -60,14 +60,14 @@ module GenCache
 
         private
         def background_refresh(item_id)
-            GenCache.log :debug, "cache_background_fetch", "triggering background fetch to sidekiq"
+            @logger.log :debug, "cache_background_fetch", "triggering background fetch to sidekiq"
             #BackgroundFetcher.perform_async(item_id)
         end
 
         def direct_fetch(item_id)
-            GenCache.log :debug, "cache_direct_fetch", "fetching #{item_id} from control class #{@config.control_class}"
+            @logger.log :debug, "cache_direct_fetch", "fetching #{item_id} from control class #{@config.control_class}"
             item = @config.control_class.fetch(item_id)
-            set(item)
+            set(item_id, item)
             item
         rescue GenCache::Error::ItemNotFound => e
             delete(item_id)
