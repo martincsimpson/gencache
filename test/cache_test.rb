@@ -8,7 +8,6 @@ describe GenCache::Cache do
     let(:logger) { Minitest::Mock.new }
 
     describe ".initialize" do
-
         it "should create mode" do
             logger.expect :log, true, [Object, Object, Object]
 
@@ -46,6 +45,7 @@ describe GenCache::Cache do
             cache.set cache_item_id, cache_item
         end
     end
+    
     describe ".delete" do
         let(:cache) { GenCache::Cache.new(config: config, namespace: namespace, mode: mode, storage: storage, logger: logger) }
         let(:cache_item_id) { "id" }

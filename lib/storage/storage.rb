@@ -9,9 +9,9 @@ module GenCache
             @logger.log :debug, "storage", "initialized storage with driver: #{@driver} in namespace: #{@namespace}"
         end
 
-        def get item_id
-            @logger.log :debug, "storage", "get #{item_id}"
-            @driver.get(item_id, namespace: @namespace)
+        def get item_ids
+            @logger.log :debug, "storage", "get #{item_ids}"
+            @driver.get(item_ids, namespace: @namespace)
         end
 
         def set id, item

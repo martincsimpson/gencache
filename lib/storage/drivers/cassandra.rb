@@ -64,11 +64,11 @@ module GenCache
                     @config = config
                 end
 
-                def get item_id, namespace:
+                def get item_ids, namespace:
                     attributes = {
                         cache_id: @config.name,
                         namespace: namespace,
-                        id: item_id
+                        id: item_ids
                     }
 
                     selector_string = build_selector(attributes)
@@ -77,13 +77,14 @@ module GenCache
 
                     result = @session.execute(query, arguments: attributes)
 
-                    wrapper = Wrapper.new
-                    wrapper.id = result.rows.first["id"]
-                    wrapper.generation = result.rows.first["generation"]
-                    wrapper.last_updated = result.rows.first["created_at"]
-                    wrapper.payload = result.rows.first["data"]
-
-                    wrapper
+                    result.rows.map do |row|
+                        wrapper = Wrapper.new
+                        wrapper.id = row['id']
+                        wrapper.generation = row["generation"]
+                        wrapper.last_updated = row["created_at"]
+                        wrapper.payload = row["data"]
+                        wrapper
+                    end
                 end
         
                 def set id, item, namespace:

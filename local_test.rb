@@ -26,16 +26,25 @@ class ProductCacheControl
     # via an api so we can call GenCache.with_cache("cache").cache_mode.offline!
     # instead of doing it via the control class
     def self.cache_mode
-        :offline
+        :online
     end
 
     # Fetches item from an external source
-    def self.fetch item_id
+    def self.fetch item_ids
         # This is sample code
-        item = Product.new(id: item_id, name: "Product Name - #{item_id}")
+        item = Product.new(id: item_ids.last, name: "Product Name - #{item_ids.last}")
         raise GenCache::Error::ItemNotFound unless item
 
-        return item
+        result_hash = {}
+        item_ids.each do |item_id|
+            if item_id == "missing_id_1"
+                result_hash[item_id] = nil
+            else
+                result_hash[item_id] = item
+            end
+        end
+
+        result_hash
     end
 
     def self.smart_refresh? item, metadata
@@ -48,7 +57,7 @@ class ProductCacheControl
 
     # TODO: Dependent on metadata
     def self.stale? item, metadata
-        return false
+        return true
     end
 
     def self.stale_allowed? item, metadata
@@ -72,4 +81,5 @@ GenCache.configure do |config|
 end
 
 GenCache.with_cache("product_cache", namespace: "gstar-enUS").set("test111", Product.new(id: "test", name: "test product"))
-GenCache.with_cache("product_cache", namespace: "gstar-enUS").get("test111")
+require 'pry'; binding.pry
+GenCache.with_cache("product_cache", namespace: "gstar-enUS").get(["test111", "missing_id_1"])

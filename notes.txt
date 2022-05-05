@@ -18,8 +18,11 @@ Done:
     ---
     - namespace: "merchant" (dynamic)
     - Cassandra backing store with migrations
+    --
+    - Tests
 
 Next Implementation Steps:
-    - Tests
+    - Flush cache (update generations with TTL that expires)
+    - Update older generations on a SET to TTL
+    - Remove logger expects
     - Write Readme (no migrations included, reason why, how you would adjust the table / recommend how we would do migrations)
-    - Refinement/Investigation into middleware integration
