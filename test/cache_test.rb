@@ -1,16 +1,19 @@
 require "test/helper"
 
+class FakeLogger
+    def log _,_,_
+    end
+end
+
 describe GenCache::Cache do
     let(:mode) { Minitest::Mock.new }
     let(:storage) { Minitest::Mock.new }
     let(:config) { Minitest::Mock.new }
     let(:namespace) { "namespace" }
-    let(:logger) { Minitest::Mock.new }
+    let(:logger) { FakeLogger.new }
 
     describe ".initialize" do
         it "should create mode" do
-            logger.expect :log, true, [Object, Object, Object]
-
             mode.expect :new, mode do |config:|
                  true
             end
@@ -27,9 +30,6 @@ describe GenCache::Cache do
         let(:cache_item) { Minitest::Mock.new }
 
         it "should call storage set" do
-            logger.expect :log, true, [Object, Object, Object]
-            logger.expect :log, true, [Object, Object, Object]
-
             mode.expect :new, mode do |config:|
                 true
             end
@@ -51,9 +51,6 @@ describe GenCache::Cache do
         let(:cache_item_id) { "id" }
 
         it "should call storage delete" do
-            logger.expect :log, true, [Object, Object, Object]
-            logger.expect :log, true, [Object, Object, Object]
-
             mode.expect :new, mode do |config:|
                 true
             end
@@ -76,7 +73,7 @@ describe GenCache::Cache do
         let(:config) { OpenStruct.new(control_class: control_class, item_class: item_class )}
         let(:cache) { GenCache::Cache.new(config: config, namespace: namespace, mode: mode, storage: storage, logger: logger) }
         let(:wrapped_item) { Minitest::Mock.new }
-        let(:item_id) { "abcdef" }
+        let(:item_ids) { ["abcdef"] }
         let(:item) { Minitest::Mock.new }
         let(:metadata) { Minitest::Mock.new }
         let(:wrapped_item) { Minitest::Mock.new }
@@ -93,31 +90,21 @@ describe GenCache::Cache do
             wrapped_item.expect :unwrap, item
             wrapped_item.expect :metadata, metadata
             
-            logger.expect :log, nil, [:debug, String, String]
-
+        
             control_class.expect :stale?, true, [item,metadata]
             control_class.expect :stale_allowed?, false, [item,metadata]
-
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-
             wrapped_item.expect :!, false
-            logger.expect :log, nil, [:debug, String, String]
 
             mode.expect :can_fetch_inline?, true
 
             control_class.expect :fetch, item, [item_id]
-            logger.expect :log, nil, [:debug, String, String]
-
-            logger.expect :log, nil, [:debug, String, String]
-            item.expect :is_a?, true, [item_class]
 
             storage.expect :set, nil, [item_id, item]
             
-            cache.get(item_id)
+            cache.get(item_ids)
         end
 
-        it "should raise an error if stale and stale not allowed and cache offline" do
+        it "should return an object that has an error component" do
             mode.expect :new, mode do |config:|
                 true
             end
@@ -129,21 +116,15 @@ describe GenCache::Cache do
             wrapped_item.expect :unwrap, item
             wrapped_item.expect :metadata, metadata
             
-            logger.expect :log, nil, [:debug, String, String]
-
             control_class.expect :stale?, true, [item,metadata]
             control_class.expect :stale_allowed?, false, [item,metadata]
 
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-
             wrapped_item.expect :!, false
-            logger.expect :log, nil, [:debug, String, String]
 
             mode.expect :can_fetch_inline?, false
 
             assert_raises GenCache::Error::CacheIsOffline do
-                cache.get(item_id)
+                cache.get(item_ids)
             end
         end
 
@@ -160,21 +141,12 @@ describe GenCache::Cache do
             wrapped_item.expect :unwrap, item
             wrapped_item.expect :metadata, metadata
             
-            logger.expect :log, nil, [:debug, String, String]
-
             control_class.expect :stale?, true, [item,metadata]
             control_class.expect :stale_allowed?, true, [item,metadata]
-
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
 
             wrapped_item.expect :!, false
 
             control_class.expect :smart_refresh?, false, [item,metadata]
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-
             cache.get(item_id)
         end
 
@@ -189,22 +161,13 @@ describe GenCache::Cache do
             storage.expect :get, wrapped_item, [item_id]
             wrapped_item.expect :unwrap, item
             wrapped_item.expect :metadata, metadata
-            
-            logger.expect :log, nil, [:debug, String, String]
 
             control_class.expect :stale?, true, [item,metadata]
             control_class.expect :stale_allowed?, true, [item,metadata]
 
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-
             wrapped_item.expect :!, false
 
             control_class.expect :smart_refresh?, true, [item,metadata]
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-            logger.expect :log, nil, [:debug, String, String]
-
             cache.get(item_id)
         end
     end
@@ -228,10 +191,7 @@ describe GenCache::Cache do
             storage.expect :new, storage do |config:, namespace:|
                 true
             end
-            logger.expect :log, nil, [:debug, String, String]
             mode.expect :can_fetch_background?, true
-
-            logger.expect :log, nil, [:debug, String, String]
 
             cache.stub :direct_fetch, nil do
                 cache.background_fetch item_id
@@ -245,13 +205,10 @@ describe GenCache::Cache do
             storage.expect :new, storage do |config:, namespace:|
                 true
             end
-            logger.expect :log, nil, [:debug, String, String]
             mode.expect :can_fetch_background?, false
             
             cache.stub :direct_fetch, nil do
                 assert_raises GenCache::Error::CacheIsOffline do
-                    logger.expect :log, nil, [:debug, String, String]
-
                     cache.background_fetch item_id
                 end
             end
