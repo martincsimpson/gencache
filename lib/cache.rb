@@ -67,7 +67,7 @@ module GenCache
             @logger.log :debug, "cache_get", "checking for errored ids: #{error_ids}"
 
             begin
-                if error_ids.count > 0
+                unless error_ids.empty?
                     items = direct_fetch(error_ids, :inline)
                     items.each do |id, item|
                         if item
