@@ -1,3 +1,16 @@
+require "gencache/cache/background_fetcher"
+require "gencache/cache/configuration"
+require "gencache/cache/mode"
+require "gencache/cache/result"
+require "gencache/cache/configuration"
+require "gencache/storage/drivers/cassandra"
+require "gencache/storage/drivers/memory"
+require "gencache/storage/storage"
+require "gencache/storage/wrapper"
+require "gencache/configuration"
+require "gencache/cache"
+require "gencache/error"
+
 module GenCache
 
     # Find a cache that has been specified
@@ -24,4 +37,3 @@ module GenCache
     end
 
 end
-

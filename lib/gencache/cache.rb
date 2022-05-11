@@ -66,13 +66,23 @@ module GenCache
             error_ids = item_result_set.map { |k,v| v.status == :error ? v.id : nil }.compact
             @logger.log :debug, "cache_get", "checking for errored ids: #{error_ids}"
 
+            result_set_to_cache = []
+
             begin
                 unless error_ids.empty?
-                    items = direct_fetch(error_ids, :inline)
+                    if block_given?
+                        raise GenCache::Error::CacheIsOffline unless @mode.can_fetch_inline?
+                        items = yield error_ids
+                        raise GenCache::Error::FetchItemsUnexpectedFormat unless items.is_a?(Hash)
+                    else
+                        items = direct_fetch(error_ids, :inline)
+                    end
+                    
                     items.each do |id, item|
                         if item
                             @logger.log :debug, "cache_get", "direct_fetch success for error ID: #{id}"
                             item_result_set[id] = Cache::Result.ok!(id, item)
+                            result_set_to_cache[id] << item
                         else
                             @logger.log :debug, "cache_get", "direct_fetch fail for error ID: #{id}"
                             item_result_set[id] = Cache::Result.missing!(id)
@@ -86,7 +96,12 @@ module GenCache
                 end
             end
             
-            item_result_set
+            # TODO: Change this to be multple set instead of one by one
+            result_set_to_cache.each do |id, item|
+                set(id, item)
+            end
+
+            item_result_set.merge({result_set_to_cache})
         end
 
         def set id, item
